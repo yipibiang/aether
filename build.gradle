@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group = 'com.helixent'
+group = 'com.aether'
 version = '1.0.0'
 
 java {
@@ -28,7 +28,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.helixent.Main'
+    mainClass = 'com.aether.Main'
 }
 
 tasks.withType(JavaCompile).configureEach {

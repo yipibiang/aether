@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.helixent.coding.tools.GrepSearchToolTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.013">
-  <properties/>
-  <testcase name="searchesExistingDirectory(Path)" classname="com.helixent.coding.tools.GrepSearchToolTest" time="0.01"/>
-  <testcase name="returnsErrorForNonExistentDirectory()" classname="com.helixent.coding.tools.GrepSearchToolTest" time="0.001"/>
-  <testcase name="returnsErrorForNullPath()" classname="com.helixent.coding.tools.GrepSearchToolTest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
