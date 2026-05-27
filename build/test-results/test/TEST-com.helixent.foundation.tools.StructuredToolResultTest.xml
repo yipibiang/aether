@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.foundation.tools.StructuredToolResultTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:35" hostname="BY_CP" time="0.003">
+  <properties/>
+  <testcase name="structuredToolResult_isSealedInterface()" classname="com.helixent.foundation.tools.StructuredToolResultTest" time="0.0"/>
+  <testcase name="error_allowsNullCodeAndDetails()" classname="com.helixent.foundation.tools.StructuredToolResultTest" time="0.0"/>
+  <testcase name="success_createsWithOkTrue()" classname="com.helixent.foundation.tools.StructuredToolResultTest" time="0.0"/>
+  <testcase name="error_createsWithOkFalse()" classname="com.helixent.foundation.tools.StructuredToolResultTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

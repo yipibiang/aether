@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.agent.ToolResultRuntimeTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.049">
+  <properties/>
+  <testcase name="inferToolErrorKind_returnsUnknownForNull()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.004"/>
+  <testcase name="normalizeToolResult_preservesStructuredSuccess()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.002"/>
+  <testcase name="formatToolResultForMessage_preservesDataForContentCarryingTools()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.023"/>
+  <testcase name="normalizeToolResult_normalizesPlainSuccessStrings()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.002"/>
+  <testcase name="normalizeToolResult_preservesStructuredErrorAndInfersErrorKind()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.001"/>
+  <testcase name="inferToolErrorKind_mapsCommonErrorCodeFamilies()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.0"/>
+  <testcase name="formatToolResultForMessage_alwaysReturnsValidJsonWhenPayloadExceedsLimits()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.004"/>
+  <testcase name="formatToolResultForMessage_formatsErrorsWithStableShape()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.004"/>
+  <testcase name="normalizeToolResult_normalizesLegacyStringErrors()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.0"/>
+  <testcase name="formatToolResultForMessage_omitsDataForSummaryFirstTools()" classname="com.helixent.agent.ToolResultRuntimeTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

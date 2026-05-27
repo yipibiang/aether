@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.foundation.messages.ContentTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.016">
+  <properties/>
+  <testcase name="toolUseContent_throwsOnNullName()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="textContent_throwsOnNullText()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="toolUseContent_createsWithAllFields()" classname="com.helixent.foundation.messages.ContentTest" time="0.0"/>
+  <testcase name="content_isSealedInterface()" classname="com.helixent.foundation.messages.ContentTest" time="0.0"/>
+  <testcase name="thinkingContent_createsWithThinking()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="toolUseContent_throwsOnNullId()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="imageURLContent_defaultsDetailToNull()" classname="com.helixent.foundation.messages.ContentTest" time="0.002"/>
+  <testcase name="toolResultContent_throwsOnNullToolUseId()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="thinkingContent_throwsOnNullThinking()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="imageURLContent_createsWithUrl()" classname="com.helixent.foundation.messages.ContentTest" time="0.0"/>
+  <testcase name="textContent_createsWithText()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <testcase name="toolResultContent_createsWithAllFields()" classname="com.helixent.foundation.messages.ContentTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

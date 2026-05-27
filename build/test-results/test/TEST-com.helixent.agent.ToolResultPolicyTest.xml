@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.agent.ToolResultPolicyTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.008">
+  <properties/>
+  <testcase name="forTool_returnsDataCarryingPolicyForReadFile()" classname="com.helixent.agent.ToolResultPolicyTest" time="0.002"/>
+  <testcase name="forTool_returnsSummaryFirstPolicyForGrepSearch()" classname="com.helixent.agent.ToolResultPolicyTest" time="0.001"/>
+  <testcase name="forTool_returnsDefaultPolicyForUnknownTools()" classname="com.helixent.agent.ToolResultPolicyTest" time="0.001"/>
+  <testcase name="forTool_returnsSummaryFirstPolicyForSearchAndInspectionTools()" classname="com.helixent.agent.ToolResultPolicyTest" time="0.001"/>
+  <testcase name="forTool_returnsDataCarryingPolicyForWriteTools()" classname="com.helixent.agent.ToolResultPolicyTest" time="0.0"/>
+  <testcase name="forTool_returnsSummaryFirstPolicyForGlobSearch()" classname="com.helixent.agent.ToolResultPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

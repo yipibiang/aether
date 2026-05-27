@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.coding.tools.AskUserQuestionManagerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.022">
+  <properties/>
+  <testcase name="validateResultAgainstParams_unknownLabelThrows()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.008"/>
+  <testcase name="validateResultAgainstParams_missingAnswerThrows()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.005"/>
+  <testcase name="validateResultAgainstParams_singleSelectRequiresExactlyOne()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.001"/>
+  <testcase name="validateResultAgainstParams_validSingleSelect()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.001"/>
+  <testcase name="askUserQuestion_returnsResult()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.001"/>
+  <testcase name="subscribe_notifiesSubscriber()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.001"/>
+  <testcase name="validateResultAgainstParams_multiSelectRequiresAtLeastOne()" classname="com.helixent.coding.tools.AskUserQuestionManagerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

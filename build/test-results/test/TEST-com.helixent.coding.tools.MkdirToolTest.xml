@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.coding.tools.MkdirToolTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.02">
+  <properties/>
+  <testcase name="createsDirectory(Path)" classname="com.helixent.coding.tools.MkdirToolTest" time="0.007"/>
+  <testcase name="createsNestedDirectories(Path)" classname="com.helixent.coding.tools.MkdirToolTest" time="0.006"/>
+  <testcase name="returnsErrorForExistingDirectory(Path)" classname="com.helixent.coding.tools.MkdirToolTest" time="0.004"/>
+  <testcase name="returnsErrorForNullPath()" classname="com.helixent.coding.tools.MkdirToolTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

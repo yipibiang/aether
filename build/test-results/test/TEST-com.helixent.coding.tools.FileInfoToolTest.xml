@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.helixent.coding.tools.FileInfoToolTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-15T20:09:34" hostname="BY_CP" time="0.013">
+  <properties/>
+  <testcase name="returnsErrorForNonExistentPath()" classname="com.helixent.coding.tools.FileInfoToolTest" time="0.003"/>
+  <testcase name="returnsDirectoryInfo(Path)" classname="com.helixent.coding.tools.FileInfoToolTest" time="0.003"/>
+  <testcase name="returnsErrorForNullPath()" classname="com.helixent.coding.tools.FileInfoToolTest" time="0.001"/>
+  <testcase name="returnsFileInfo(Path)" classname="com.helixent.coding.tools.FileInfoToolTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
