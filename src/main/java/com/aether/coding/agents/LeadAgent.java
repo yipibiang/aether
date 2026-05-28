@@ -1,32 +1,26 @@
 package com.aether.coding.agents;
 
-import com.aether.agent.Agent;
-import com.aether.agent.AgentDebugLogMiddleware;
-import com.aether.agent.AgentMiddleware;
-import com.aether.agent.ReActAgent;
-import com.aether.agent.SkillsMiddleware;
-import com.aether.agent.todos.TodoSystem;
 import com.aether.coding.permissions.ApprovalDecision;
 import com.aether.coding.permissions.ApprovalManager;
 import com.aether.coding.permissions.ApprovalPersistence;
 import com.aether.coding.permissions.CodingApprovalMiddleware;
-import com.aether.coding.tools.ApplyPatchTool;
-import com.aether.coding.tools.AskUserQuestionManager;
-import com.aether.coding.tools.AskUserQuestionTool;
-import com.aether.coding.tools.BashTool;
-import com.aether.coding.tools.FileInfoTool;
-import com.aether.coding.tools.GlobSearchTool;
-import com.aether.coding.tools.GrepSearchTool;
-import com.aether.coding.tools.ListFilesTool;
-import com.aether.coding.tools.MkdirTool;
-import com.aether.coding.tools.MovePathTool;
-import com.aether.coding.tools.ReadFileTool;
-import com.aether.coding.tools.StrReplaceTool;
-import com.aether.coding.tools.WriteFileTool;
 import com.aether.foundation.messages.Content;
 import com.aether.foundation.messages.Message;
 import com.aether.foundation.models.Model;
+import com.aether.foundation.skills.SkillCatalog;
+import com.aether.foundation.tools.CompositeToolRegistry;
 import com.aether.foundation.tools.Tool;
+import com.aether.foundation.tools.ToolRegistry;
+import com.aether.runtime.Agent;
+import com.aether.runtime.AgentDebugLogMiddleware;
+import com.aether.runtime.AgentMiddleware;
+import com.aether.runtime.ReActAgent;
+import com.aether.skills.FileSystemSkillCatalog;
+import com.aether.skills.SkillsMiddleware;
+import com.aether.tools.AskUserQuestionManager;
+import com.aether.tools.AskUserQuestionToolRegistry;
+import com.aether.tools.CodingToolRegistry;
+import com.aether.tools.todo.TodoToolRegistry;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,66 +31,42 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
- * 编码 Agent 工厂 — 创建工具、中间件、提示词和 Agent 实例。
- *
- * <h3>独立工厂方法</h3>
- * 每个方法可独立调用和测试，无需完整组装：
- * <ul>
- *   <li>{@link #createTools()} — 创建所有编码工具列表</li>
- *   <li>{@link #createMiddlewares} — 创建中间件链</li>
- *   <li>{@link #createPrompt} — 生成系统提示词</li>
- *   <li>{@link #loadAgentsFile} — 加载 AGENTS.md</li>
- *   <li>{@link #createCodingAgent} — 完整组装</li>
- * </ul>
+ * 编码 Agent 组装 — 组合 {@code skills}、{@code tools}、{@code runtime}，不包含具体 tool 实现。
  */
 public final class LeadAgent {
 
     private LeadAgent() {}
 
-    /**
-     * 创建所有编码工具（不含 Todo 和 AskUserQuestion）。
-     * 每个工具可独立 new 和测试。
-     */
-    public static List<Tool> createTools() {
-        var tools = new ArrayList<Tool>();
-        tools.add(new BashTool());
-        tools.add(new FileInfoTool());
-        tools.add(new ListFilesTool());
-        tools.add(new GlobSearchTool());
-        tools.add(new GrepSearchTool());
-        tools.add(new MkdirTool());
-        tools.add(new MovePathTool());
-        tools.add(new ReadFileTool());
-        tools.add(new WriteFileTool());
-        tools.add(new StrReplaceTool());
-        tools.add(new ApplyPatchTool());
-        return tools;
+    public static List<String> defaultSkillsDirs(String cwd) {
+        var home = System.getProperty("user.home");
+        return List.of(
+            Path.of(cwd, "skills").toString(),
+            Path.of(cwd, ".agents", "skills").toString(),
+            Path.of(home, ".aether", "skills").toString(),
+            Path.of(home, ".agents", "skills").toString()
+        );
     }
 
-    /**
-     * 创建中间件链。
-     *
-     * @param modelName 模型名称（用于调试日志）
-     * @param skillsDirs 技能目录列表
-     * @param askUser 用户审批回调（null 则跳过审批中间件）
-     * @param approvalPersistence 审批持久化
-     * @param cwd 工作目录
-     */
     public static List<AgentMiddleware> createMiddlewares(
         String modelName,
-        List<String> skillsDirs,
+        SkillCatalog skillCatalog,
+        AgentMiddleware todoMiddleware,
         Function<Content.ToolUseContent, CompletableFuture<ApprovalDecision>> askUser,
         ApprovalPersistence approvalPersistence,
         String cwd,
         String debugLogPath
     ) {
-        var todoSystemResult = TodoSystem.create();
-        var todoMiddleware = todoSystemResult.middleware();
+        if (todoMiddleware == null) {
+            throw new IllegalArgumentException("todoMiddleware is required");
+        }
+        if (skillCatalog == null) {
+            throw new IllegalArgumentException("skillCatalog is required");
+        }
 
         var middlewares = new ArrayList<AgentMiddleware>();
         middlewares.add(AgentDebugLogMiddleware.create(
             new AgentDebugLogMiddleware.AgentDebugLogOptions(modelName, 100, debugLogPath)));
-        middlewares.add(new SkillsMiddleware(skillsDirs));
+        middlewares.add(new SkillsMiddleware(skillCatalog));
         middlewares.add(todoMiddleware);
 
         if (askUser != null) {
@@ -113,9 +83,6 @@ public final class LeadAgent {
         return middlewares;
     }
 
-    /**
-     * 生成系统提示词。
-     */
     public static String createPrompt(String cwd) {
         return """
             <agent name="Aether" role="leading_agent" description="A coding agent">
@@ -142,11 +109,6 @@ public final class LeadAgent {
             """.formatted(cwd);
     }
 
-    /**
-     * 加载工作目录下的 AGENTS.md 文件。
-     *
-     * @return 包含 AGENTS.md 内容的消息列表，文件不存在时返回空列表
-     */
     public static List<Message> loadAgentsFile(String cwd) {
         var messages = new ArrayList<Message>();
         var agentsFilePath = Path.of(cwd, "AGENTS.md");
@@ -163,60 +125,64 @@ public final class LeadAgent {
         return messages;
     }
 
-    /**
-     * 完整组装编码 Agent。
-     */
     public static Agent createCodingAgent(CodingAgentOptions options) {
-        var model = options.model();
-        var cwd = options.cwd() != null ? options.cwd() : System.getProperty("user.dir");
-        var skillsDirs = options.skillsDirs() != null ? options.skillsDirs()
-            : List.of(Path.of(cwd, ".agents", "skills").toString());
-        var askUser = options.askUser();
-        var askUserQuestion = options.askUserQuestion();
-        var approvalPersistence = options.approvalPersistence();
-
-        var messages = loadAgentsFile(cwd);
-
-        var todoSystemResult = TodoSystem.create();
-        var todoTool = todoSystemResult.tool();
-
-        var tools = createTools();
-        tools.add(todoTool);
-
-        if (askUserQuestion != null) {
-            var askUserQuestionTool = new AskUserQuestionTool(new AskUserQuestionManager() {
-                @Override
-                public CompletableFuture<AskUserQuestionManager.AskUserQuestionResult> askUserQuestion(
-                    AskUserQuestionManager.AskUserQuestionParameters params
-                ) {
-                    return askUserQuestion.apply(params);
-                }
-            });
-            tools.add(askUserQuestionTool);
+        if (options == null) {
+            throw new IllegalArgumentException("options is required");
         }
 
-        var middlewares = createMiddlewares(model.name(), skillsDirs, askUser, approvalPersistence, cwd, options.debugLogPath());
+        var model = options.model();
+        var cwd = options.cwd() != null ? options.cwd() : System.getProperty("user.dir");
+        var skillsDirs = options.skillsDirs() != null ? options.skillsDirs() : defaultSkillsDirs(cwd);
+        var skillCatalog = options.skillCatalog() != null
+            ? options.skillCatalog()
+            : new FileSystemSkillCatalog(skillsDirs);
+
+        var todoRegistry = new TodoToolRegistry();
+        var tools = assembleTools(options, todoRegistry);
+        var middlewares = createMiddlewares(
+            model.name(),
+            skillCatalog,
+            todoRegistry.middleware(),
+            options.askUser(),
+            options.approvalPersistence(),
+            cwd,
+            options.debugLogPath()
+        );
         var prompt = createPrompt(cwd);
+        var messages = loadAgentsFile(cwd);
 
         return new ReActAgent("aether", model, prompt, messages, tools, middlewares, 100);
+    }
+
+    static List<Tool> assembleTools(CodingAgentOptions options, TodoToolRegistry todoRegistry) {
+        var registries = new ArrayList<ToolRegistry>();
+        registries.add(options.toolRegistry() != null ? options.toolRegistry() : new CodingToolRegistry());
+        registries.add(todoRegistry);
+        if (options.askUserQuestionManager() != null) {
+            registries.add(new AskUserQuestionToolRegistry(options.askUserQuestionManager()));
+        }
+        return new CompositeToolRegistry(registries).tools();
     }
 
     public record CodingAgentOptions(
         Model model,
         String cwd,
         List<String> skillsDirs,
+        SkillCatalog skillCatalog,
+        ToolRegistry toolRegistry,
         Function<Content.ToolUseContent, CompletableFuture<ApprovalDecision>> askUser,
-        Function<AskUserQuestionManager.AskUserQuestionParameters,
-            CompletableFuture<AskUserQuestionManager.AskUserQuestionResult>> askUserQuestion,
+        AskUserQuestionManager askUserQuestionManager,
         ApprovalPersistence approvalPersistence,
         String debugLogPath
     ) {
         public CodingAgentOptions {
-            if (model == null) throw new IllegalArgumentException("model is required");
+            if (model == null) {
+                throw new IllegalArgumentException("model is required");
+            }
         }
 
         public CodingAgentOptions(Model model) {
-            this(model, null, null, null, null, null, null);
+            this(model, null, null, null, null, null, null, null, null);
         }
     }
 }

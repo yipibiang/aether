@@ -1,12 +1,15 @@
 package com.aether;
 
-import com.aether.agent.AgentDebugLog;
-import com.aether.agent.AgentEvent;
-import com.aether.cli.io.ConsoleCharset;
+import com.aether.runtime.AgentDebugLog;
+import com.aether.runtime.AgentEvent;
+import com.aether.runtime.ReActAgent;
+import com.aether.skills.FileSystemSkillCatalog;
+import com.aether.console.ConsoleCharset;
+import com.aether.console.SlashCommands;
 import com.aether.coding.agents.LeadAgent;
 import com.aether.coding.permissions.ApprovalDecision;
 import com.aether.coding.permissions.ApprovalPersistence;
-import com.aether.coding.tools.AskUserQuestionManager;
+import com.aether.tools.AskUserQuestionManager;
 import com.aether.community.openai.OpenAIModelProvider;
 import com.aether.foundation.messages.Content;
 import com.aether.foundation.messages.Message;
@@ -77,19 +80,35 @@ public class Main {
 
         var debugLogPath = resolveDebugLogPath(env);
 
+        var skillsDirs = LeadAgent.defaultSkillsDirs(cwd);
+        var skillCatalog = new FileSystemSkillCatalog(skillsDirs);
+        var availableSkills = SlashCommands.listAvailableSkills(skillCatalog);
+
         var options = new LeadAgent.CodingAgentOptions(
             model,
             cwd,
+            skillsDirs,
+            skillCatalog,
             null,
             toolUse -> CompletableFuture.completedFuture(ApprovalDecision.ALLOW_ONCE),
-            params -> askUserQuestionManager.askUserQuestion(params),
+            askUserQuestionManager,
             approvalPersistence,
             debugLogPath
         );
 
         var agent = LeadAgent.createCodingAgent(options);
+        if (!(agent instanceof ReActAgent reactAgent)) {
+            System.err.println("Expected ReActAgent implementation.");
+            return;
+        }
 
-        System.out.println("Aether ready. Type /exit to quit.");
+        System.out.println("Aether ready. Type /exit to quit. /help for slash commands.");
+        if (!availableSkills.isEmpty()) {
+            System.out.println("Loaded skills: " + availableSkills.stream()
+                .map(s -> s.name())
+                .reduce((a, b) -> a + ", " + b)
+                .orElse(""));
+        }
         System.out.println();
 
         var stdin = getStdin();
@@ -103,10 +122,26 @@ public class Main {
 
                 var trimmed = line.trim();
                 if (trimmed.isEmpty()) continue;
-                if ("/exit".equals(trimmed) || "/quit".equals(trimmed)) break;
 
-                var userMsg = new Message.UserMessage(List.of(new Content.TextContent(trimmed)));
-                agent.stream(userMsg)
+                System.out.println(trimmed);
+                System.out.println();
+
+                var submission = SlashCommands.parseInput(trimmed, availableSkills);
+                var skillToken = submission.requestedSkillName();
+                if ("__exit__".equals(skillToken)) break;
+                if ("__clear__".equals(skillToken)) {
+                    reactAgent.clearMessages();
+                    System.out.println("Conversation cleared.");
+                    continue;
+                }
+                if ("__help__".equals(skillToken)) {
+                    System.out.println(SlashCommands.formatHelp(availableSkills));
+                    continue;
+                }
+
+                reactAgent.setRequestedSkillName(skillToken);
+                var userMsg = new Message.UserMessage(List.of(new Content.TextContent(submission.text())));
+                reactAgent.stream(userMsg)
                     .doOnNext(event -> {
                         if (event instanceof AgentEvent.MessageEvent me) {
                             var msg = me.message();
@@ -121,6 +156,7 @@ public class Main {
                     })
                     .doOnError(e -> System.err.println("Error: " + e.getMessage()))
                     .blockLast();
+                reactAgent.setRequestedSkillName(null);
             }
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
@@ -152,7 +188,6 @@ public class Main {
     static void installConsoleStreams() {
         try {
             var cs = ConsoleCharset.forConsoleIo();
-            System.err.println("[DEBUG] ConsoleCharset.forConsoleIo() = " + cs.name());
             System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, cs));
             System.setErr(new PrintStream(new FileOutputStream(FileDescriptor.err), true, cs));
         } catch (Exception ignored) {

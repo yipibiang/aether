@@ -1,6 +1,6 @@
 package com.aether.coding.permissions;
 
-import com.aether.agent.AgentMiddleware;
+import com.aether.runtime.AgentMiddleware;
 import com.aether.foundation.messages.Content;
 
 import java.util.List;
